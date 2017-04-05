@@ -8,7 +8,7 @@ Current features (v 0.1):
   - execve() calling
   - fork() calling
   - Process termination
-  - Dazzaling colour support
+  - Dazzling colour support
 
 # Prerequisits
   * The [colored](https://pypi.python.org/pypi/colored) python module
