@@ -17,4 +17,4 @@ Current features (v 0.1):
   - Run as root (in order to access the trace pipe) - python plumber.py
   - Kick back and enjoy :)
 # Licesnsing:
- Plumber is licensed under the AGPL license. Please see LISENCE.MD file for more details.
+ Plumber is licensed under the AGPL license. Please see LICENSE.MD file for more details.
