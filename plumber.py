@@ -35,7 +35,7 @@ if not os.geteuid() == 0:
 # Change dir to the tracer directory
 os.chdir("/sys/kernel/debug/tracing/")
 
-#We're creating a custom krpboe and calling  it "plumber_sys_execve"
+#We're creating a custom kprobe and calling  it "plumber_sys_execve"
 CR_EXECVE = "plumber_sys_execve"
 
 #This function removes the tracer (DOH!) It's called on exit for cleanliness
