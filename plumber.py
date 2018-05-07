@@ -1,10 +1,10 @@
-import select
-import re
-from collections import defaultdict
-import os
-from termcolor import colored, cprint
 import datetime
+import os
+import re
+import select
 import sys
+from collections import defaultdict
+from termcolor import colored, cprint
 
 print("Welcome to Plumber, a grep friendly execve/fork monitor for Linux!")
 print("Written by Amit Serper, Cybereason | Contact: @0xAmit")
@@ -90,7 +90,10 @@ def print_red(txt):
 #Let's go!
 def trace():
     # Open the trace pipe
-    f = open("/sys/kernel/debug/tracing/trace_pipe")
+    if sys.version_info < (3, 0):
+        f = open("/sys/kernel/debug/tracing/trace_pipe")
+    else:
+        f = open("/sys/kernel/debug/tracing/trace_pipe", encoding='utf-8', errors='ignore')
 
     piddict = defaultdict(dict)
 
@@ -99,7 +102,11 @@ def trace():
             r, w, e = select.select([f], [], [], 0)
             if f not in r:
                 continue
-            line = f.readline()
+
+            if sys.version_info < (3, 0):
+                line = f.readline().decode('utf-8', 'ignore')
+            else:
+                line = f.readline()
 
             m = re.search(r'sched_process_(.*?):', line)
             # Parsing output from the trace pipe
