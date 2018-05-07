@@ -6,8 +6,8 @@ from termcolor import colored, cprint
 import datetime
 import sys
 
-print "Welcome to Plumber, a grep friendly execve/fork monitor for Linux!"
-print "Written by Amit Serper, Cybereason | Contact: @0xAmit"
+print("Welcome to Plumber, a grep friendly execve/fork monitor for Linux!")
+print("Written by Amit Serper, Cybereason | Contact: @0xAmit")
 #     Copyright (C) 2017, Cybereason
 #
 #     This program is free software: you can redistribute it and/or modify
@@ -155,7 +155,7 @@ def trace():
                 m = re.search(r'^.*?\-(\d+)\s*\[', line)
 
                 if m is None:
-                    print "ERROR: unknown format: ", line
+                    print("ERROR: unknown format: ", line)
 
                 pid = int(m.group(1))
                 #"walk" over every argument field, 'fault' is our terminator. If we see it it means that there are
