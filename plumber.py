@@ -79,9 +79,9 @@ def disableTrace():
     open("kprobe_events", 'a+').write("-:"+CR_EXECVE)
     open("trace", 'w').write('')
 
-#This prints in green
-def print_green(txt):
-    cprint(txt, 'green')
+#This prints in yellow
+def print_yellow(txt):
+    cprint(txt, 'yellow')
 
 #This prints in red
 def print_red(txt):
@@ -123,7 +123,7 @@ def trace():
                     piddict[child_pid] = {'parent': pid,
                                           'command': child_command}
 
-                    print_green("%s: Process %s (pid=%d) forked from parent %s (pid=%d)" % \
+                    print_yellow("%s: Process %s (pid=%d) forked from parent %s (pid=%d)" % \
                           (datetime.datetime.now().time(), child_command, child_pid, command, pid))
 
                 elif m.group(1) == 'exec':
@@ -141,7 +141,7 @@ def trace():
                         parent_pid = piddict[pid]['parent']
                         outstr += "; parent is %s (pid=%d)" % (piddict[parent_pid].get('command', '<empty>'), parent_pid)
 
-                    print_green(str(datetime.datetime.now().time()) + ": "+outstr)
+                    print_yellow(str(datetime.datetime.now().time()) + ": "+outstr)
 
 
                 elif m.group(1) == 'exit':
@@ -177,7 +177,7 @@ def trace():
 
     # When CTRL-C is hit we don't want to leave tracers open
     except KeyboardInterrupt:
-        print_green("Quitting gracefully")
+        print_yellow("Quitting gracefully")
         disableTrace()
 
 
