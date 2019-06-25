@@ -1,13 +1,13 @@
-import select
-import re
-from collections import defaultdict
-import os
-from termcolor import colored, cprint
 import datetime
+import os
+import re
+import select
 import sys
+from collections import defaultdict
+from termcolor import colored, cprint
 
-print "Welcome to Plumber, a grep friendly execve/fork monitor for Linux!"
-print "Written by Amit Serper, Cybereason | Contact: @0xAmit"
+print("Welcome to Plumber, a grep friendly execve/fork monitor for Linux!")
+print("Written by Amit Serper, Cybereason | Contact: @0xAmit")
 #     Copyright (C) 2017, Cybereason
 #
 #     This program is free software: you can redistribute it and/or modify
@@ -35,7 +35,7 @@ if not os.geteuid() == 0:
 # Change dir to the tracer directory
 os.chdir("/sys/kernel/debug/tracing/")
 
-#We're creating a custom krpboe and calling  it "plumber_sys_execve"
+#We're creating a custom kprobe and calling  it "plumber_sys_execve"
 CR_EXECVE = "plumber_sys_execve"
 
 #This function removes the tracer (DOH!) It's called on exit for cleanliness
@@ -79,9 +79,9 @@ def disableTrace():
     open("kprobe_events", 'a+').write("-:"+CR_EXECVE)
     open("trace", 'w').write('')
 
-#This prints in green
-def print_green(txt):
-    cprint(txt, 'green')
+#This prints in yellow
+def print_yellow(txt):
+    cprint(txt, 'yellow')
 
 #This prints in red
 def print_red(txt):
@@ -90,7 +90,10 @@ def print_red(txt):
 #Let's go!
 def trace():
     # Open the trace pipe
-    f = open("/sys/kernel/debug/tracing/trace_pipe")
+    if sys.version_info < (3, 0):
+        f = open("/sys/kernel/debug/tracing/trace_pipe")
+    else:
+        f = open("/sys/kernel/debug/tracing/trace_pipe", encoding='utf-8', errors='ignore')
 
     piddict = defaultdict(dict)
 
@@ -99,7 +102,11 @@ def trace():
             r, w, e = select.select([f], [], [], 0)
             if f not in r:
                 continue
-            line = f.readline()
+
+            if sys.version_info < (3, 0):
+                line = f.readline().decode('utf-8', 'ignore')
+            else:
+                line = f.readline()
 
             m = re.search(r'sched_process_(.*?):', line)
             # Parsing output from the trace pipe
@@ -116,7 +123,7 @@ def trace():
                     piddict[child_pid] = {'parent': pid,
                                           'command': child_command}
 
-                    print_green("%s: Process %s (pid=%d) forked from parent %s (pid=%d)" % \
+                    print_yellow("%s: Process %s (pid=%d) forked from parent %s (pid=%d)" % \
                           (datetime.datetime.now().time(), child_command, child_pid, command, pid))
 
                 elif m.group(1) == 'exec':
@@ -134,7 +141,7 @@ def trace():
                         parent_pid = piddict[pid]['parent']
                         outstr += "; parent is %s (pid=%d)" % (piddict[parent_pid].get('command', '<empty>'), parent_pid)
 
-                    print_green(str(datetime.datetime.now().time()) + ": "+outstr)
+                    print_yellow(str(datetime.datetime.now().time()) + ": "+outstr)
 
 
                 elif m.group(1) == 'exit':
@@ -155,7 +162,7 @@ def trace():
                 m = re.search(r'^.*?\-(\d+)\s*\[', line)
 
                 if m is None:
-                    print "ERROR: unknown format: ", line
+                    print("ERROR: unknown format: ", line)
 
                 pid = int(m.group(1))
                 #"walk" over every argument field, 'fault' is our terminator. If we see it it means that there are
@@ -170,7 +177,7 @@ def trace():
 
     # When CTRL-C is hit we don't want to leave tracers open
     except KeyboardInterrupt:
-        print_green("Quitting gracefully")
+        print_yellow("Quitting gracefully")
         disableTrace()
 
 
